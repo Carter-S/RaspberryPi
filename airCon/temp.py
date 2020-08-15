@@ -1,9 +1,20 @@
 import os
 import glob
 import time
+import RPi.GPIO as GPIO
  
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
+
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+
+fanPin = 21
+dTemp = 21
+
+GPIO.setup(fanPin, GPIO.OUT)
+
+GPIO.output(fanPin,True)
  
 base_dir = '/sys/bus/w1/devices/'
 device_folder = glob.glob(base_dir + '28*')[0]
@@ -25,8 +36,12 @@ def read_temp():
         temp_string = lines[1][equals_pos+2:]
         temp_c = float(temp_string) / 1000.0
         temp_f = temp_c * 9.0 / 5.0 + 32.0
-        return temp_c, temp_f
+        return temp_c
     
 while True:
-    print(read_temp())  
-    time.sleep(1)
+    if round(read_temp()) > dTemp:
+        GPIO.output(fanPin,False)
+        print(read_temp())
+    else:
+        GPIO.output(fanPin,True)
+        
