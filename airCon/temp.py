@@ -2,17 +2,22 @@ import os
 import glob
 import time
 import RPi.GPIO as GPIO
- 
+import threading
+
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 
-fanPin = 21
-dTemp = 21
+buttonUp = 16
+buttonDown = 20
+fanPin = 19
+dTemp = 24
 
 GPIO.setup(fanPin, GPIO.OUT)
+GPIO.setup(buttonUp, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(buttonDown, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 GPIO.output(fanPin,True)
  
@@ -37,11 +42,30 @@ def read_temp():
         temp_c = float(temp_string) / 1000.0
         temp_f = temp_c * 9.0 / 5.0 + 32.0
         return temp_c
-    
-while True:
-    if round(read_temp()) > dTemp:
-        GPIO.output(fanPin,False)
-        print(read_temp())
-    else:
-        GPIO.output(fanPin,True)
-        
+def tempMeth():
+	while True:
+        	if read_temp() > dTemp:
+            		GPIO.output(fanPin,False)
+        	else:
+            		GPIO.output(fanPin,True)
+def upMeth():
+	global dTemp
+	while True:
+        	if(GPIO.input(buttonUp) == 0):
+            		dTemp += 1
+            		print(dTemp)
+			time.sleep(0.5)
+def downMeth():
+	global dTemp
+	while True:
+        	if(GPIO.input(buttonDown) == 0):
+            		dTemp-= 1
+            		print(dTemp)
+			time.sleep(0.5)
+
+t1 = threading.Thread(target=tempMeth)
+t2 = threading.Thread(target=upMeth)
+t3 = threading.Thread(target=downMeth)
+t1.start()
+t2.start()
+t3.start()
