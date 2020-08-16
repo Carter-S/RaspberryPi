@@ -54,14 +54,14 @@ def upMeth():
         	if(GPIO.input(buttonUp) == 0):
             		dTemp += 1
             		print(dTemp)
-			time.sleep(0.5)
+			time.sleep(0.2)
 def downMeth():
 	global dTemp
 	while True:
         	if(GPIO.input(buttonDown) == 0):
             		dTemp-= 1
             		print(dTemp)
-			time.sleep(0.5)
+			time.sleep(0.2)
 
 t1 = threading.Thread(target=tempMeth)
 t2 = threading.Thread(target=upMeth)
