@@ -6,17 +6,16 @@ controlPin = 21
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(controlPin, GPIO.OUT)
 
-p = GPIO.PWM(controlPin, 50)
-p.start(7.5)
-
+servo = GPIO.PWM(controlPin, 50)
+servo.start(0)
 try:
     while True:
-        p.ChangeDutyCycle(7.5)
+        servo.ChangeDutyCycle(2)
         time.sleep(1)
-        p.ChangeDutyCycle(12.5)
+        servo.ChangeDutyCycle(7)
         time.sleep(1)
-        p.ChangeDutyCycle(2.5)
+        servo.ChangeDutyCycle(12)
         time.sleep(1)
 finally:
-    p.stop()
+    servo.stop()
     GPIO.cleanup()
